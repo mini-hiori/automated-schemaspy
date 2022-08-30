@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schemaMeta xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://schemaspy.org/xsd/6/schemameta.xsd">
+    <tables>
+        <!-- <table name="テーブル名を入力" comments="コメントを入力">
+        </table> -->
+    </tables>
+</schemaMeta>

@@ -1,0 +1,51 @@
+name: automated-schemaspy
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron:  '0 15 * * *' # 毎日JST0時に実行
+  workflow_dispatch: # 手動更新用
+
+jobs:
+  schemaspy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: install java
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install default-jre
+      - name: render schema-docs
+        run: |
+          wget https://github.com/schemaspy/schemaspy/releases/download/v6.1.0/schemaspy-6.1.0.jar \
+          -O schemaspy.jar
+          wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.48.zip \
+          -O mysql-connector-java-5.1.48.zip
+          unzip -o mysql-connector-java-5.1.48.zip
+          java -jar schemaspy.jar -t mysql \
+          -host ${{ secrets.DB_HOST }}:3306 \
+          -db ${{ secrets.DB_NAME }} \
+          -u ${{ secrets.DB_USER }} \
+          -p ${{ secrets.DB_PASSWORD }} \
+          -s ${{ secrets.DB_SCHEMA }} \
+          -dp mysql-connector-java-5.1.48/mysql-connector-java-5.1.48-bin.jar \
+          -connprops useSSL\\=false \
+          -o ./build/output \
+          -noexportedkeys -vizjs -meta ./schema-meta.xml
+      - name: commit results
+        run: |
+          ls
+          nowdate=$(TZ=UTC-9 date +"%Y/%m/%d %H:%M")
+          git config user.name --replace-all github-actions
+          git config user.email --replace-all github-actions@github.com
+          git add ./build/output
+          git commit -m "Auto updated by GithubActions:schemaspy on ${nowdate}"
+          git pull
+          git push
+      # - name: uplaod to s3 # オプション。生成したテーブル定義htmlをS3に配置したいときは、Secretsを追加のうえ有効化する
+      #   run: |
+      #     ls
+      #     cd build
+      #     aws s3 cp output ${{ secrets.S3_URI }} --recursive
