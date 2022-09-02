@@ -18,6 +18,8 @@
 
 ### 備考
 
+- インターネットに公開していないデータベースにGithub Actionsからアクセスする際は[self-hosted runner](https://docs.github.com/ja/actions/hosting-your-own-runners/about-self-hosted-runners)を使う必要があります
+    - このリポジトリのActionsはGithub提供のrunnerを使用していますが、これはインターネットに公開していないリソースにはアクセスできません
 - テーブル定義表にコメントを追加したい場合は、`schema-meta.xml` に追記した状態でGithub Actionsを再起動してください
 - 生成物の `output` フォルダ以下全ファイルを移動すると、テーブル定義表の外部公開が可能です
     - 例: AWS S3に `output` フォルダ以下を配置し、[静的サイトホスティング](https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/WebsiteHosting.html)機能を使って公開する
